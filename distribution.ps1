@@ -16,13 +16,24 @@ $distributionGroups = Get-ADGroup -Filter 'groupcategory -eq "Distribution"' -Pr
 #region Loop Through $distributionGroups
 foreach ($i in $distributionGroups)
 {
-   $distinguishedName = $i.ManagedBy
-   $managedBy = Get-ADUser -Identity $distinguishedName
-   $description = "Managed by: " + $managedBy.name
 
+    $distinguishedName = $i.ManagedBy
+    #Try to get the user information
+    try {
+        $managedBy = Get-ADUser -Identity $distinguishedName
+        $description = "Managed by: " + $managedBy.name
+    }
 
+    #If any exeption, try to get group information
+    catch [Exception] 
+    { 
+        $managedBy = Get-ADGroup -Identity $distinguishedName
+        $description = "Managed by: " + $managedBy.name
+    }
+   
+   #See if description is up-to-date 
    $distributionGroup = $i.Name 
-   if ($i.Description -eq $managedBy)
+   if ($i.Description -eq $description)
    {
     $nochanges++
    }
