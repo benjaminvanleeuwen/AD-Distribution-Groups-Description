@@ -1,4 +1,3 @@
-﻿cls
 #region create variables
 $distributionGroups = $null
 $managedBy = $null
